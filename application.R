@@ -21,7 +21,7 @@ library(ggplot2)
 source("fn_main.R")
 
 ##############################################################################
-### Read the original longitudinal dataset
+### Read the original longitudinal dataset                                 ###
 ##############################################################################
 
 dat_long  <- read_sas("chapter15_example.sas7bdat")
@@ -30,7 +30,7 @@ dat_long  <- read_sas("chapter15_example.sas7bdat")
 df0       <- dat_long %>% group_by(PATIENT) %>% slice_max(order_by = VISIT, n = 1, with_ties = FALSE) %>% ungroup()
 
 ##############################################################################
-### Simulation parameters
+### Simulation parameters                                                  ###
 ##############################################################################
 
 nrep      <- 500
@@ -59,7 +59,7 @@ if(!is.finite(EC)) stop("The completer-based treatment effect could not be estim
 if(!is.finite(sigma_rep) || sigma_rep <= 0) stop("The completer-based residual standard deviation must be positive.")
 
 ##############################################################################
-### Main
+### Main                                                                   ###
 ##############################################################################
 
 ### Store treatment-effect estimates and rejection indicators
@@ -167,7 +167,7 @@ for (j in 1:nrep) {
 }
 
 ##############################################################################
-### Create the boxplot
+### Create the boxplot                                                     ###
 ##############################################################################
 
 res_df <- data.frame(Estimate = c(res_arr[, 1, 1], 
@@ -191,7 +191,7 @@ p01 <- ggplot(res_df, aes(x = Method, y = Estimate, fill = Method)) +
   theme(legend.position = "none", legend.title = element_blank(), axis.title.x = element_text(size = 14), axis.text.x = element_text(size = 12), axis.title.y = element_text(size = 14), axis.text.y = element_text(size = 12))
 
 ##############################################################################
-### Save the results
+### Save the result and boxplot                                            ###
 ##############################################################################
 
 result_file <- sprintf("appout_Rf=%.2f_Bf=%.2f.RData", Rf, Bf)
@@ -199,3 +199,52 @@ figure_file <- sprintf("appout_main_boxplot_Rf=%.2f_Bf=%.2f.pdf", Rf, Bf)
 
 save(res_df, res_arr, file = result_file)
 ggsave(filename = figure_file, plot = p01, width = 10, height = 4)
+
+##############################################################################
+### Create boxplots for the supplementary material                         ###
+##############################################################################
+
+# rm(list = ls())
+# 
+# library(haven)
+# library(tidyverse)
+# library(ggplot2)
+# 
+# Rf        <- 1.00
+# Bf        <- 0.00
+# 
+# result_file <- sprintf("appout_Rf=%.2f_Bf=%.2f.RData", Rf, Bf)
+# figure_file <- sprintf("appout_main_boxplot_Rf=%.2f_Bf=%.2f_V2.pdf", Rf, Bf)
+# 
+# load(file = result_file)
+# 
+# if(Rf < 1) {
+#   
+#   p01 <- ggplot(res_df, aes(x = Method, y = Estimate, fill = Method)) +
+#     geom_boxplot() +
+#     scale_y_continuous(breaks = seq(-12, 4, by = 1)) +
+#     coord_flip(ylim = c(-12, 4)) +
+#     scale_fill_brewer(palette = "Dark2") +
+#     xlab("Method") +
+#     ylab("") +
+#     theme_bw() +
+#     theme(legend.position = "none", legend.title = element_blank(),
+#           axis.title.x = element_text(size = 14), axis.text.x = element_text(size = 12),
+#           axis.title.y = element_text(size = 14), axis.text.y = element_text(size = 12))
+#   
+# } else {
+#   
+#   p01 <- ggplot(res_df, aes(x = Method, y = Estimate, fill = Method)) +
+#     geom_boxplot() +
+#     scale_y_continuous(breaks = seq(-12, 4, by = 1)) +
+#     coord_flip(ylim = c(-12, 4)) +
+#     scale_fill_brewer(palette = "Dark2") +
+#     xlab("Method") +
+#     ylab("Treatment effect estimate under the TP strategy") +
+#     theme_bw() +
+#     theme(legend.position = "none", legend.title = element_blank(),
+#           axis.title.x = element_text(size = 14), axis.text.x = element_text(size = 12),
+#           axis.title.y = element_text(size = 14), axis.text.y = element_text(size = 12))
+# }
+# 
+# ggsave(filename = figure_file, plot = p01, width = 10, height = 2)

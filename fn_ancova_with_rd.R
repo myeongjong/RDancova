@@ -31,8 +31,6 @@
 ###     sig_hat: the estimates of \sigma_{\epsilon} 
 ###     res_pmod: the resulting output from probit model
 
-#pmat = dat$pmat ; obs_y = dat$obs_Y ; Rvec = dat$Rvec ; max_iter = 500 ;opt_std = T ;opt_offset = T
-
 find_mle <- function(pmat, obs_y, Rvec, max_iter = 500, opt_std = T, opt_offset = T){
   
   # 1. Compute \hat{\pi}

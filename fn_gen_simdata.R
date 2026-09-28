@@ -16,18 +16,18 @@
 ###   1. function to simulate each baseline response and predictor        ###
 #############################################################################
 
-# The function below generates Y_{i,0} at baseline and binary variable for trt/placebo
+### The function below generates Y_{i,0} at baseline and binary variable for trt/placebo
 
-# Inputs
-# n: sample size
-# ntrt: the total number of subjects having a treatment
-# mu: mean of Normal dist'n for baseline response
-# s: standard deviation of Normal dist'n for baseline response
+### Inputs
+###   n: sample size
+###   ntrt: the total number of subjects having a treatment
+###   mu: mean of Normal dist'n for baseline response
+###   s: standard deviation of Normal dist'n for baseline response
 
-# Output
-# pmat: n by 2 matrix of simulated data
-# where the first column shows the vector of initial responses at baseline
-# the second column consists of binary variable that indicates treatment assignment
+### Output
+###   pmat: n by 2 matrix of simulated data
+###     where the first column shows the vector of initial responses at baseline
+###     the second column consists of binary variable that indicates treatment assignment
 
 gen_pred <- function(n, ntrt, mu, s){
   pmat <- matrix(NA, nrow = n, ncol = 2)
@@ -40,17 +40,17 @@ gen_pred <- function(n, ntrt, mu, s){
 ###   2. function to compute R_{i} for subject categorization             ###
 #############################################################################
 
-# The function below simulates R_{i} 
+### The function below simulates R_{i} 
 
-# Inputs
-# gvec: 3-dimensional vector of gamma (intercept and the other two) for the latent variable model
-# pi: the conditional probability of Q = 1 given D = 0
-# pmat: n by 2 matrix simulated from the gen_pred function above 
-# sd_u: the standard deviation of error in the latent variable model
-# opt_std: a logical to indicate whether the baseline response to be scaled or not
+### Inputs
+###   gvec: 3-dimensional vector of gamma (intercept and the other two) for the latent variable model
+###   pi: the conditional probability of Q = 1 given D = 0
+###   pmat: n by 2 matrix simulated from the gen_pred function above 
+###   sd_u: the standard deviation of error in the latent variable model
+###   opt_std: a logical to indicate whether the baseline response to be scaled or not
 
-# Output
-# Rvec: n-dimensional vector of R_{i} 
+### Output
+###   Rvec: n-dimensional vector of R_{i} 
 
 gen_latent <- function(gvec, pi, pmat, sd_u, opt_std = T){
   n <- nrow(pmat)
@@ -71,16 +71,16 @@ gen_latent <- function(gvec, pi, pmat, sd_u, opt_std = T){
 ###   3. function to compute the observed response for completer and RD   ###
 #############################################################################
 
-# Inputs
-# Rvec: n-dimensional vector of R_{i} 
-# bvec: 2-dimensional vector of beta for the linear model
-# delta: effect associated with either RD or Missing
-# pmat: n by 2 matrix of predictors
-# sd_eps: standard deviation of error in the model for latent variable
+### Inputs
+###   Rvec: n-dimensional vector of R_{i} 
+###   bvec: 2-dimensional vector of beta for the linear model
+###   delta: effect associated with either RD or Missing
+###   pmat: n by 2 matrix of predictors
+###   sd_eps: standard deviation of error in the model for latent variable
 
-# Outputs
-# obs_Y: n-dimensional vector of observed responses (zero if R_{i} = -1)
-# Y: n-dimensional vector of full response (including R_{i} = -1)
+### Outputs
+###   obs_Y: n-dimensional vector of observed responses (zero if R_{i} = -1)
+###   Y: n-dimensional vector of full response (including R_{i} = -1)
 
 gen_resp <- function(Rvec, bvec, delta, pmat, sd_eps){
   Y <- pmat%*%bvec + delta*ifelse(Rvec<=0, 1, 0) + rnorm(length(Rvec), sd = sd_eps)
@@ -92,14 +92,14 @@ gen_resp <- function(Rvec, bvec, delta, pmat, sd_eps){
 ###   4. function to integrate the above three functions for simulation   ###
 #############################################################################
 
-# Inputs
-# Same as the descriptions above
+### Inputs
+###   Same as the descriptions above
 
-# Outputs
-# pmat: n by 2 matrix of predictors
-# Rvec: n-dimensional vector of R_{i}
-# obs_Y: n-dimensional vector of observed responses
-# Y: n-dimensional vector of full response (including R_{i} = -1)
+### Outputs
+###   pmat: n by 2 matrix of predictors
+###   Rvec: n-dimensional vector of R_{i}
+###   obs_Y: n-dimensional vector of observed responses
+###   Y: n-dimensional vector of full response (including R_{i} = -1)
 
 sim_model <- function(n, ntrt, pi, delta, bvec, gvec, mu, s, sd_eps, sd_u, opt_std = T){
   pmat <- gen_pred(n, ntrt, mu, s) 
