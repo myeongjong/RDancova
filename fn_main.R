@@ -34,12 +34,13 @@ sim_fn <- function(n, ntrt, mu_base, sd_base, beta2, kappa, sd_eps, qprob,
   true_tp <- bvec[2] + delta*(pnorm((gam0 + gam2)/sqrt(2)) - pnorm((gam0)/sqrt(2)))
   
   neg_indc <- T
-  
-  while(neg_indc){
-    dat <- sim_model(n, ntrt, qprob, delta, bvec, gvec, mu_base, sd_base, sd_eps, sd_u = 1)  
-    if(min(dat$obs_Y) >= 0){
-      neg_indc <- F
-    }
+  while (neg_indc) {
+    
+    dat <- sim_model(n, ntrt, qprob, delta, bvec, gvec, mu_base, sd_base, sd_eps, sd_u = 1)
+    
+    counts <- table(data.frame(group = dat$pmat[, 2], status = dat$Rvec))
+    
+    if (min(dat$obs_Y) >= 0 && min(counts) > 2) neg_indc <- FALSE
   }
   
   res_mat <- matrix(NA, nrow = 4, ncol = 4)  

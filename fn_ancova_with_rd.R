@@ -16,19 +16,20 @@
 ###   1. compute the function to compute the MLE                          ###
 #############################################################################
 
-# Inputs
-# pmat: n by 2 matrix of predictors
-# obs_y: n dimensional vector of observed response
-# Rvec: n dimensional vector of R_{i}
-# max_iter: maximum number of iterations to be passed to glm function
-# opt_std: a logical to indicate whether the baseline response to be scaled or not
-# opt_offset: a logical to indicate whether we set the gamma_{1} (associated with the baseline) to be 1 or not
+### Inputs
+###   pmat: n by 2 matrix of predictors
+###   obs_y: n dimensional vector of observed response
+###   Rvec: n dimensional vector of R_{i}
+###   max_iter: maximum number of iterations to be passed to glm function
+###   opt_std: a logical to indicate whether the baseline response to be scaled or not
+###   opt_offset: a logical to indicate whether we set the gamma_{1} (associated with the baseline) to be 1 or not
 
-# Outputs
-# pi_hat: the estimates of pi 
-# res_lmod: the resulting output from linear model
-# sig_hat: the estimates of \sigma_{\epsilon} 
-# res_pmod: the resulting output from probit model
+### Outputs
+###   A list containing:
+###     pi_hat: the estimates of pi 
+###     res_lmod: the resulting output from linear model
+###     sig_hat: the estimates of \sigma_{\epsilon} 
+###     res_pmod: the resulting output from probit model
 
 #pmat = dat$pmat ; obs_y = dat$obs_Y ; Rvec = dat$Rvec ; max_iter = 500 ;opt_std = T ;opt_offset = T
 

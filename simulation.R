@@ -164,6 +164,7 @@ outtab <- function(res, beta_hy, beta_tp)
   print(paste0("Simulation success rate: ", round(sum(!is.na(res)) / length(res) * 100, 1), "% out of ", length(res), " simulations were successful."))
   
   res <- res[!is.na(res)]
+  nsim <- length(res)
   
   bias <- matrix(0, nrow = length(res), ncol = 4) 
   colnames(bias) <- c("new", "rtb", "wash", "rd_imp")
@@ -175,6 +176,7 @@ outtab <- function(res, beta_hy, beta_tp)
     bias[i, "rd_imp"] <- bias[i, "rd_imp"] + (res[[i]]["rd_imp", "bhat"] - beta_tp)
   }
   
+  bias_mcse <- apply(bias, 2, sd) / sqrt(nrow(bias))
   bias <- colMeans(bias) # ; round(bias, 2)
   
   rmse <- matrix(0, nrow = length(res), ncol = 4) 
@@ -187,7 +189,9 @@ outtab <- function(res, beta_hy, beta_tp)
     rmse[i, "rd_imp"] <- rmse[i, "rd_imp"] + (res[[i]]["rd_imp", "bhat"] - beta_tp)^2
   }
   
-  rmse <- sqrt(colMeans(rmse)) # ; round(rmse, 2)
+  rmse_mean <- sqrt(colMeans(rmse)) # ; round(rmse, 2)
+  rmse_mcse <- apply(rmse, 2, sd) / (2 * rmse_mean * sqrt(nrow(rmse)))
+  rmse <- rmse_mean
   
   covrate <- matrix(0, nrow = length(res), ncol = 4) 
   colnames(covrate) <- c("new", "rtb", "wash", "rd_imp")
@@ -199,6 +203,7 @@ outtab <- function(res, beta_hy, beta_tp)
     covrate[i, "rd_imp"] <- res[[i]]["rd_imp", "covered"]
   }
   
+  covrate_mcse <- apply(covrate, 2, sd) / sqrt(nrow(covrate)) * 100
   covrate <- colMeans(covrate) * 100 # ; round(covrate, 2)
   
   cilength <- matrix(0, nrow = length(res), ncol = 4) 
@@ -211,6 +216,7 @@ outtab <- function(res, beta_hy, beta_tp)
     cilength[i, "rd_imp"] <- res[[i]]["rd_imp", "length"]
   }
   
+  cilength_mcse <- apply(cilength, 2, sd) / sqrt(nrow(cilength))
   cilength <- colMeans(cilength) # ; round(cilength, 2)
   
   rejrate <- matrix(0, nrow = length(res), ncol = 4) 
@@ -223,15 +229,21 @@ outtab <- function(res, beta_hy, beta_tp)
     rejrate[i, "rd_imp"] <- res[[i]]["rd_imp", "rejected"]
   }
   
+  rejrate_mcse <- apply(rejrate, 2, sd) / sqrt(nrow(rejrate))
   rejrate <- colMeans(rejrate) # ; round(rejrate, 2)
   
-  output <- data.frame(BETA_HYP = round(beta_hy, 3), 
-                       BETA_TP = round(beta_tp, 3), 
-                       BIAS = round(bias, 3), 
-                       RMSE = round(rmse, 3),  
-                       REJRATE = round(rejrate, 3), 
-                       COVRATE = round(covrate, 2), 
+  output <- data.frame(BETA_HYP = round(beta_hy, 3),
+                       BETA_TP = round(beta_tp, 3),
+                       BIAS = round(bias, 3),
+                       MCSE_BIAS = round(bias_mcse, 3),
+                       RMSE = round(rmse, 3),
+                       MCSE_RMSE = round(rmse_mcse, 3),
+                       REJRATE = round(rejrate, 3),
+                       MCSE_REJRATE = round(rejrate_mcse, 3),
+                       COVRATE = round(covrate, 2),
+                       MCSE_COVRATE = round(covrate_mcse, 3),
                        CI95LENGTH = round(cilength, 3),
+                       MCSE_CI95LENGTH = round(cilength_mcse, 3),
                        row.names = c("NEW", "RTB", "WASHOUT", "RDIMPUTE"))
   
   output[c("RTB", "WASHOUT", "RDIMPUTE", "NEW"), ]
