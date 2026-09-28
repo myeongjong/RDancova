@@ -18,18 +18,18 @@ library(doParallel) # load this package for parallel computing
 source("fn_main.R") # load the source code we have
 
 ##############################################################################
-###
+### Set the random seed and number of simulation replications              ###
 ##############################################################################
 
 my_seed <- 04012025 # set the number for set.seed()
 num_sim <- 5000 # the total number of independent simulation runs
 
 ##############################################################################
-###
+### Main: Run simulations across the settings described in the manuscript and supplementary materials using parallel processing
 ##############################################################################
 
 set.seed(my_seed)
-randseeds <- sort(sample(seq(100), size = 12)) * 10000 # sort(sample(x = seq(10000), size = 12))
+randseeds <- sort(sample(seq(100), size = 12)) * 10000
 
 registerDoParallel(cl <- makeCluster(parallel::detectCores() - 2))
 
@@ -156,7 +156,7 @@ res24 <- foreach(i = 1:num_sim) %dopar% { tryCatch(sim_fn(n, ntrt, mu_base, sd_b
 stopCluster(cl)
 
 ##############################################################################
-###
+### R function to tabulate simulation results                              ###
 ##############################################################################
 
 outtab <- function(res, beta_hy, beta_tp)
@@ -250,7 +250,7 @@ outtab <- function(res, beta_hy, beta_tp)
 }
 
 ##############################################################################
-###
+### Inspect and save the simulation results                                ###
 ##############################################################################
 
 # n = 200 and pi = 0.5
